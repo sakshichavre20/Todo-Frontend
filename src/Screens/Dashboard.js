@@ -1,12 +1,16 @@
 import React, { useState, useEffect, useRef } from "react";
 import DeleteOutlineIcon from "@mui/icons-material/DeleteOutline";
 import AutoFixHighIcon from "@mui/icons-material/AutoFixHigh";
-import axios from "axios";
+import Moment from "react-moment";
 import { useWindowDimensions } from "../Constants/Constants";
 import "../Styles/Dashboard.css";
+import API from "../axios/api";
+import Loader from "../Components/Loader";
 
 function Dashboard() {
   const { width, height } = useWindowDimensions();
+
+  const [loading, setLoading] = useState(false);
 
   const currentUser = localStorage.getItem("user");
   const user = JSON.parse(currentUser);
@@ -24,12 +28,11 @@ function Dashboard() {
     if (todo === "") {
       console.log("please enter some value");
     } else {
-      const res = await axios
-        .post("http://localhost:5000/addTodo", {
-          user_id: user?._id,
-          todo: todo,
-          created_at: new Date(),
-        })
+      const res = await API.AddTodo({
+        user_id: user?._id,
+        todo: todo,
+        created_at: new Date(),
+      })
         .then((res) => {
           console.log(res.data);
           setTodo("");
@@ -44,14 +47,16 @@ function Dashboard() {
   };
 
   const GetTodo = async () => {
-    await axios
-      .get(`http://localhost:5000/getTodos?user_id=${user._id}`)
+    setLoading(true);
+    await API.GetTodo(user?._id)
       .then((res) => {
         console.log(res.data);
         setTodoList(res.data.todos);
+        setLoading(false);
       })
       .catch((err) => {
         console.log(err);
+        setLoading(false);
       });
   };
 
@@ -66,6 +71,7 @@ function Dashboard() {
         height: "100vh",
         width: "100vw",
         display: "flex",
+        overflow: "hidden",
         // alignItems: "center",
       }}
     >
@@ -89,9 +95,11 @@ function Dashboard() {
           backdropFilter: "blur(5px)",
           width: "100vw",
           height: "100vh",
+
           //  padding: 24,
         }}
       >
+        {loading && <Loader loading={loading} />}
         <div
           style={{
             alignSelf: "flex-start",
@@ -114,21 +122,24 @@ function Dashboard() {
               //    ref={(input) => (todoRef = input)}
               onKeyPress={(e) => e.key === "Enter" && AddTodo()}
               onChange={(e) => setTodo(e.target.value)}
-              placeholder="add todo"
+              placeholder="Add Your Todo..."
               style={{
                 height: 20,
                 width: "50vw",
                 padding: 10,
-                borderRadius: 5,
+                borderRadius: 9,
                 marginRight: 10,
                 elevation: 10,
+                borderWidth: 0,
+                borderColor: "white",
+                outline: "none",
               }}
             />
 
             <button
               style={{
                 backgroundColor: "wheat",
-                borderRadius: 5,
+                borderRadius: 9,
                 width: 100,
                 height: 45,
                 padding: 10,
@@ -150,40 +161,72 @@ function Dashboard() {
               //  backgroundColor: "red",
             }}
           >
-            <div style={{ display: "flex", flexDirection: "column" }}>
-              {todoList?.map((item) => {
-                if (!item.completed) {
-                  return (
-                    <div key={item?._id}>
-                      <TodoItem
-                        item={item}
-                        setTodoTrigger={setTodoTrigger}
-                        todoTrigger={todoTrigger}
-                      />
-                    </div>
-                  );
-                }
-              })}
+            <div
+              style={{
+                display: "flex",
+                flexDirection: "column",
+                height: width < 700 ? "100%" : "calc(100vh - 300px)",
+              }}
+            >
+              <h2 style={{ color: "wheat" }}>To do's</h2>
+              <div
+                style={{
+                  display: "flex",
+                  flexDirection: "column",
+                  overflowY: "auto",
+                  height: width < 700 ? "100%" : "calc(100vh - 300px)",
+                  //  backgroundColor: "red",
+
+                  // height: "calc(100vh - 400px)",
+                }}
+              >
+                {todoList?.map((item) => {
+                  if (!item.completed) {
+                    return (
+                      <div key={item?._id}>
+                        <TodoItem
+                          item={item}
+                          setTodoTrigger={setTodoTrigger}
+                          todoTrigger={todoTrigger}
+                        />
+                      </div>
+                    );
+                  }
+                })}
+              </div>
             </div>
             <div
               style={{
                 display: "flex",
                 flexDirection: "column",
+
+                height: width < 700 ? "100%" : "calc(100vh - 300px)",
                 marginLeft: width < 700 ? 0 : 20,
               }}
             >
-              {todoList?.map((item) => {
-                if (item.completed)
-                  return (
-                    <div key={item?._id}>
-                      <TodoItem
-                        item={item}
-                        setTodoTrigger={setTodoTrigger}
-                        todoTrigger={todoTrigger}
-                      />
-                    </div>
-                  );
-              })}
+              <h2 style={{ color: "wheat" }}>Completed</h2>
+              <div
+                style={{
+                  display: "flex",
+                  flexDirection: "column",
+                  overflowY: "auto",
+                  height: width < 700 ? "100%" : "calc(100vh - 300px)",
+                  marginLeft: width < 700 ? 0 : 20,
+                }}
+              >
+                {todoList?.map((item) => {
+                  if (item.completed)
+                    return (
+                      <div key={item?._id}>
+                        <TodoItem
+                          item={item}
+                          setTodoTrigger={setTodoTrigger}
+                          todoTrigger={todoTrigger}
+                        />
+                      </div>
+                    );
+                })}
+              </div>
             </div>
           </div>
         </div>
@@ -198,13 +241,13 @@ const TodoItem = ({ item, todoTrigger, setTodoTrigger }) => {
   const [done, setDone] = useState(false);
   const [editTodoModal, setEditTodoModal] = useState(false);
   const [deleteTodoModal, setDeleteTodoModal] = useState(false);
+  const [hover, setHover] = useState(null);
   const markDone = async () => {
     const data = {
       todo_id: item._id,
     };
 
-    await axios
-      .post("http://localhost:5000/markDone", data)
+    await API.MarkDone(data)
       .then((res) => {
         console.log(res.data);
         setDone(true);
@@ -220,8 +263,7 @@ const TodoItem = ({ item, todoTrigger, setTodoTrigger }) => {
       todo_id: item._id,
     };
 
-    await axios
-      .post("http://localhost:5000/undoTodo", data)
+    await API.UndoTodo(data)
       .then((res) => {
         console.log(res.data);
         setDone(false);
@@ -239,8 +281,7 @@ const TodoItem = ({ item, todoTrigger, setTodoTrigger }) => {
       created_at: new Date(),
     };
 
-    await axios
-      .post("http://localhost:5000/editTodo", data)
+    await API.EditTodo(data)
       .then((res) => {
         console.log(res.data);
 
@@ -257,8 +298,7 @@ const TodoItem = ({ item, todoTrigger, setTodoTrigger }) => {
       todo_id: item._id,
     };
 
-    await axios
-      .post("http://localhost:5000/deleteTodo", data)
+    await API.DeleteTodo(data)
       .then((res) => {
         console.log(res.data);
 
@@ -271,56 +311,142 @@ const TodoItem = ({ item, todoTrigger, setTodoTrigger }) => {
   };
 
   return (
-    <div
-      key={item._id}
-      style={{
-        display: "flex",
-        //  backgroundColor: "#0005",
-        width: width < 700 ? "50vw" : "20vw",
-        marginTop: 5,
-        padding: 15,
-        borderRadius: 5,
-        alignItems: "center",
-        justifyContent: "space-between",
-      }}
-      className="list_item"
-    >
-      <div>
-        <input
-          type="checkbox"
-          checked={item.completed}
-          name="todo"
-          value={item._id}
-          style={{
-            cursor: "pointer",
-          }}
-          onChange={() => (!item.completed ? markDone() : undoDone())}
-        />
-
-        <a style={{ marginLeft: 10 }}>{item.todo}</a>
-      </div>
+    <>
       <div
+        key={item._id}
         style={{
           display: "flex",
-          alignSelf: "end",
+          //  backgroundColor: "#0005",
+          width: width < 700 ? "55vw" : "40vw",
+          marginTop: 5,
+          padding: 15,
+          borderRadius: 5,
+          alignItems: "center",
+          justifyContent: "space-between",
+          flexDirection: "column",
         }}
+        onMouseEnter={() => {
+          // setTimeout(() => {
+          setHover(item?._id);
+          // }, 500);
+        }}
+        onMouseLeave={() => {
+          setHover("");
+        }}
+        className="list_item"
       >
-        {!item.completed ? (
-          <AutoFixHighIcon
-            style={{ color: "white" }}
-            onClick={() => {
-              seteditTodo(item.todo);
-              setEditTodoModal(true);
+        <div style={{ display: "flex", alignItems: "center" }}>
+          <input
+            type="checkbox"
+            checked={item.completed}
+            name="todo"
+            value={item._id}
+            style={{
+              cursor: "pointer",
+              outline: "none",
             }}
+            onChange={() => (!item.completed ? markDone() : undoDone())}
           />
-        ) : (
-          <DeleteOutlineIcon
-            style={{ color: "white" }}
-            onClick={() => setDeleteTodoModal(true)}
-          />
-        )}
+          <div
+            style={{
+              display: "flex",
+              flexDirection: "row",
+              justifyContent: "space-between",
+              alignItems: "center",
+              //   backgroundColor: "pink",
+              width: width < 700 ? "53vw" : "38vw",
+            }}
+          >
+            <a style={{ marginLeft: 10 }}>{item.todo}</a>
+            <a
+              style={{
+                color: "#fff",
+                fontSize: 10,
+                textAlign: "right",
+                alignSelf: "flex-end",
+              }}
+            >
+              <Moment format="D MMM YYYY" withTitle>
+                {item?.created_at}
+              </Moment>
+            </a>
+          </div>
+        </div>
+        <div
+          style={{
+            display: "flex",
+            alignSelf: "flex-start",
+          }}
+        >
+          {/* {!item.completed ? (
+            <AutoFixHighIcon
+              style={{ color: "white" }}
+              onClick={() => {
+                seteditTodo(item.todo);
+                setEditTodoModal(true);
+              }}
+            />
+          ) : (
+            <DeleteOutlineIcon
+              style={{ color: "white" }}
+              onClick={() => setDeleteTodoModal(true)}
+            />
+          )} */}
+          {hover === item?._id && (
+            <div
+              style={{
+                display: "flex",
+                alignItems: "center",
+                marginTop: 10,
+              }}
+            >
+              <div
+                style={{
+                  cursor: "pointer",
+                  //   backgroundColor: "#f57",
+                  padding: 8,
+                  paddingInline: 15,
+                  borderRadius: 10,
+                  marginLeft: 10,
+                  boxShadow: "5px 5px 10px #0007",
+                  transition: "500ms",
+                  opacity: hover === item?._id ? 1 : 0,
+                  transform: `scale(${hover === item?._id ? 1 : 0})`,
+                }}
+              >
+                <AutoFixHighIcon
+                  style={{ color: "white" }}
+                  onClick={() => {
+                    seteditTodo(item.todo);
+                    setEditTodoModal(true);
+                  }}
+                />
+              </div>
+              <div
+                style={{
+                  cursor: "pointer",
+                  // backgroundColor: color,
+                  //  backgroundColor: "#16f",
+                  padding: 8,
+                  paddingInline: 15,
+                  borderRadius: 10,
+                  marginLeft: 10,
+                  boxShadow: "5px 5px 10px #0007",
+                  transition: "500ms",
+                  opacity: hover === item?._id ? 1 : 0,
+                  transform: `scale(${hover === item?._id ? 1 : 0})`,
+                }}
+                // onClick={() => editTodoUI(item)}
+              >
+                <DeleteOutlineIcon
+                  style={{ color: "white" }}
+                  onClick={() => setDeleteTodoModal(true)}
+                />
+              </div>
+            </div>
+          )}
+        </div>
       </div>
-
       {editTodoModal && (
         <div
           style={{
@@ -347,10 +473,11 @@ const TodoItem = ({ item, todoTrigger, setTodoTrigger }) => {
               height: 20,
               width: "50%",
               padding: 10,
-              borderRadius: 5,
+              borderRadius: 6,
               marginRight: 10,
               elevation: 10,
               marginBottom: 20,
+              outline: "none",
             }}
           />
           <div
@@ -455,7 +582,7 @@ const TodoItem = ({ item, todoTrigger, setTodoTrigger }) => {
           </div>
         </div>
       )}
-    </div>
+    </>
   );
 };
 

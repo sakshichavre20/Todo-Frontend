@@ -2,7 +2,7 @@ import axios from "axios";
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router";
 import AuthWrapper from "../Components/AuthWrapper";
-
+import API from "../axios/api";
 function Auth() {
   const navigate = useNavigate();
   const [status, setStatus] = useState("Login");
@@ -13,21 +13,19 @@ function Auth() {
     setStatus(status);
   };
   const signUp = async () => {
-    const res = await axios
-      .post("http://localhost:5000/signup", {
-        name: name,
-        email: email,
-        password: password,
-      })
-      .then((res) => {
-        changeStatus("Login");
-        console.log(res.data);
-      });
+    const res = await API.signUp({
+      name: name,
+      email: email,
+      password: password,
+    }).then((res) => {
+      changeStatus("Login");
+      console.log(res.data);
+    });
     console.log("====", res);
     // navigate("/dashboard");
   };
   const Login = async () => {
-    const res = await axios.post("http://localhost:5000/login", {
+    const res = await API.Login({
       email: email,
       password: password,
     });
@@ -93,16 +91,47 @@ function Auth() {
               // navigate("/dashboard");
               Login();
             }}
-            style={{ height: 30, marginTop: 10 }}
+            style={{
+              //  height: 30,
+              marginTop: 10,
+              borderRadius: 5,
+              backgroundColor: "wheat",
+              padding: 10,
+              width: 90,
+              alignSelf: "center",
+            }}
           >
-            Login
+            <a style={{ color: "black" }}>Login</a>
           </button>
-          <div style={{ display: "flex", marginTop: 10 }}>
-            <a style={{ marginRight: 10, color: "wheat" }}>
+          <div
+            style={{
+              display: "flex",
+              marginTop: 10,
+              alignSelf: "center",
+              alignItems: "center",
+            }}
+          >
+            <a style={{ marginRight: 10, color: "white" }}>
               {" "}
               Don't have an account ?
             </a>
-            <button onClick={() => changeStatus("Signup")}> Signup </button>
+            {/* <button
+              onClick={() => changeStatus("Signup")}
+              style={{
+                backgroundColor: "wheat",
+                borderRadius: 6,
+                height: 30,
+                width: 60,
+              }}
+            > */}
+            <a
+              style={{ color: "wheat", cursor: "pointer" }}
+              onClick={() => changeStatus("Signup")}
+            >
+              {" "}
+              Signup{" "}
+            </a>
+            {/* </button> */}
           </div>
         </AuthWrapper>
       ) : (
@@ -158,16 +187,35 @@ function Auth() {
               signUp();
               // navigate("/dashboard")
             }}
-            style={{ height: 30, marginTop: 10 }}
+            style={{
+              marginTop: 10,
+              borderRadius: 5,
+              backgroundColor: "wheat",
+              padding: 10,
+              width: 90,
+              alignSelf: "center",
+            }}
           >
             Signup
           </button>
-          <div style={{ display: "flex", marginTop: 10 }}>
-            <a style={{ marginRight: 10, color: "wheat" }}>
+          <div
+            style={{
+              display: "flex",
+              marginTop: 10,
+              alignItems: "center",
+              alignSelf: "center",
+            }}
+          >
+            <a style={{ marginRight: 10, color: "white" }}>
               {" "}
               Already have an account ?
             </a>
-            <button onClick={() => changeStatus("Login")}> Login </button>
+            <a
+              style={{ color: "wheat", cursor: "pointer" }}
+              onClick={() => changeStatus("Login")}
+            >
+              Login{" "}
+            </a>
           </div>
         </AuthWrapper>
       )}
