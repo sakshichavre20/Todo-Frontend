@@ -3,7 +3,9 @@ import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router";
 import AuthWrapper from "../Components/AuthWrapper";
 import API from "../axios/api";
+import { useWindowDimensions } from "../Constants/Constants";
 function Auth() {
+  const { width, height } = useWindowDimensions();
   const navigate = useNavigate();
   const [status, setStatus] = useState("Login");
   const [email, setEmail] = useState("");
@@ -74,30 +76,54 @@ function Auth() {
             placeholder="email"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
+            // style={{
+            //   height: 30,
+            //   width: "90%",
+            //   marginBottom: 10,
+            //   padding: 10,
+            //   fontSize: 16,
+            //   borderRadius: 16,
+            //   borderColor: "transparent",
+            //   outline: "none",
+            // }}
             style={{
-              height: 30,
+              height: 40,
               width: "90%",
-              marginBottom: 10,
-              padding: 10,
-              fontSize: 16,
-              borderRadius: 16,
-              borderColor: "transparent",
+              minWidth: 300,
+              marginTop: 20,
+              marginBottom: 20,
+              paddingLeft: 10,
+              fontFamily: "Poppins",
+              borderRadius: 10,
               outline: "none",
+              border: 0,
             }}
           />
           <input
             placeholder="password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
+            // style={{
+            //   height: 30,
+            //   width: "90%",
+            //   marginBottom: 10,
+            //   padding: 10,
+            //   fontSize: 16,
+            //   borderRadius: 16,
+            //   borderColor: "transparent",
+            //   outline: "none",
+            // }}
             style={{
-              height: 30,
+              height: 40,
               width: "90%",
-              marginBottom: 10,
-              padding: 10,
-              fontSize: 16,
-              borderRadius: 16,
-              borderColor: "transparent",
+              minWidth: 300,
+              marginTop: 20,
+              marginBottom: 20,
+              paddingLeft: 10,
+              fontFamily: "Poppins",
+              borderRadius: 10,
               outline: "none",
+              border: 0,
             }}
           />
           <button

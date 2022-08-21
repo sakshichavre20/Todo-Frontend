@@ -1,6 +1,8 @@
 import React from "react";
+import { useWindowDimensions } from "../Constants/Constants";
 
 function AuthWrapper(props) {
+  const { width, height } = useWindowDimensions();
   return (
     <div
       style={{
@@ -9,7 +11,7 @@ function AuthWrapper(props) {
         backdropFilter: "blur(5px)",
         height: "400px",
         display: "flex",
-        width: "50vw",
+        width: width < 385 ? "100vw" : "50vw",
         borderRadius: 16,
         padding: 30,
         alignItems: "flex-start",
