@@ -11,34 +11,48 @@ function Auth() {
   const [email, setEmail] = useState("");
   const [name, setName] = useState("");
   const [password, setPassword] = useState("");
+  const [error, setError] = useState("");
   const changeStatus = (status) => {
     setStatus(status);
   };
   const signUp = async () => {
-    const res = await API.signUp({
-      name: name,
-      email: email,
-      password: password,
-    }).then((res) => {
-      changeStatus("Login");
-      console.log(res.data);
-    });
-    console.log("====", res);
+    if (email === "" || password === "") {
+      setError("Email or password or username cannot be empty");
+    } else {
+      await API.signUp({
+        name: name,
+        email: email,
+        password: password,
+      })
+        .then((res) => {
+          changeStatus("Login");
+          console.log(res.data);
+        })
+        .catch((err) => {
+          console.log(err.response.data.title);
+          setError(err.response.data.title);
+        });
+    }
     // navigate("/dashboard");
   };
   const Login = async () => {
-    const res = await API.Login({
-      email: email,
-      password: password,
-    });
-    //  console.log("====", res);
-    if (res.status === 200) {
-      localStorage.setItem("token", res?.data?.token);
-      localStorage.setItem("user", JSON.stringify(res?.data?.user));
-      console.log(res.data);
-      navigate("/dashboard");
+    if (email === "" || password === "") {
+      setError("Email or password cannot be empty");
     } else {
-      console.log(res.data);
+      await API.Login({
+        email: email,
+        password: password,
+      })
+        .then((res) => {
+          localStorage.setItem("token", res?.data?.token);
+          localStorage.setItem("user", JSON.stringify(res?.data?.user));
+          console.log(res.data);
+          navigate("/dashboard");
+        })
+        .catch((err) => {
+          console.log(err.response.data.title);
+          setError(err.response.data.title);
+        });
     }
   };
   return (
@@ -73,7 +87,7 @@ function Auth() {
         <AuthWrapper>
           <h1 style={{ color: "white" }}>Login</h1>
           <input
-            placeholder="email"
+            placeholder="Email"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             // style={{
@@ -90,8 +104,8 @@ function Auth() {
               height: 40,
               width: "90%",
               minWidth: 300,
-              marginTop: 20,
-              marginBottom: 20,
+              marginTop: 8,
+              marginBottom: 8,
               paddingLeft: 10,
               fontFamily: "Poppins",
               borderRadius: 10,
@@ -100,7 +114,7 @@ function Auth() {
             }}
           />
           <input
-            placeholder="password"
+            placeholder="Password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             // style={{
@@ -117,8 +131,8 @@ function Auth() {
               height: 40,
               width: "90%",
               minWidth: 300,
-              marginTop: 20,
-              marginBottom: 20,
+              marginTop: 8,
+              marginBottom: 8,
               paddingLeft: 10,
               fontFamily: "Poppins",
               borderRadius: 10,
@@ -126,6 +140,19 @@ function Auth() {
               border: 0,
             }}
           />
+          {error.length > 0 && (
+            <a
+              style={{
+                color: "#f57",
+                fontWeight: "bold",
+                fontSize: 14,
+                marginTop: 5,
+                alignSelf: "center",
+              }}
+            >
+              {error}
+            </a>
+          )}
           <button
             onClick={() => {
               // navigate("/dashboard");
@@ -182,46 +209,65 @@ function Auth() {
             value={name}
             onChange={(e) => setName(e.target.value)}
             style={{
-              height: 30,
+              height: 40,
               width: "90%",
-              marginBottom: 10,
-              padding: 10,
-              fontSize: 16,
-              borderRadius: 16,
-              borderColor: "transparent",
+              minWidth: 300,
+              marginTop: 8,
+              marginBottom: 8,
+              paddingLeft: 10,
+              fontFamily: "Poppins",
+              borderRadius: 10,
               outline: "none",
+              border: 0,
             }}
           />
           <input
-            placeholder="email"
+            placeholder="Email"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             style={{
-              height: 30,
+              height: 40,
               width: "90%",
-              marginBottom: 10,
-              padding: 10,
-              fontSize: 16,
-              borderRadius: 16,
-              borderColor: "transparent",
+              minWidth: 300,
+              marginTop: 8,
+              marginBottom: 8,
+              paddingLeft: 10,
+              fontFamily: "Poppins",
+              borderRadius: 10,
               outline: "none",
+              border: 0,
             }}
           />
           <input
-            placeholder="password"
+            placeholder="Password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             style={{
-              height: 30,
+              height: 40,
               width: "90%",
-              marginBottom: 10,
-              padding: 10,
-              fontSize: 16,
-              borderRadius: 16,
-              borderColor: "transparent",
+              minWidth: 300,
+              marginTop: 8,
+              marginBottom: 8,
+              paddingLeft: 10,
+              fontFamily: "Poppins",
+              borderRadius: 10,
               outline: "none",
+              border: 0,
             }}
           />
+          {error.length > 0 && (
+            <a
+              style={{
+                color: "#f57",
+                fontWeight: "bold",
+                fontSize: 14,
+                marginTop: 5,
+                alignSelf: "center",
+              }}
+            >
+              {error}
+            </a>
+          )}
           <button
             onClick={() => {
               signUp();

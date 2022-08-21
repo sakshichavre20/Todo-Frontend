@@ -106,8 +106,20 @@ function Dashboard() {
             padding: 24,
           }}
         >
-          <h1 style={{ color: "white", textAlign: "left" }}> {user?.name}</h1>
-          <h4 style={{ color: "white" }}> {user?.email}</h4>
+          <h1
+            style={{
+              color: "wheat",
+              textAlign: "left",
+              textShadow: "4px 4px 5px #0007",
+            }}
+          >
+            {" "}
+            {user?.name}
+          </h1>
+          <h4 style={{ color: "white", textShadow: "4px 4px 5px #0007" }}>
+            {" "}
+            {user?.email}
+          </h4>
 
           <div
             style={{
@@ -125,7 +137,7 @@ function Dashboard() {
               placeholder="Add Your Todo..."
               style={{
                 height: 20,
-                width: "50vw",
+                width: width < 385 ? "80vw" : "50vw",
                 padding: 10,
                 borderRadius: 9,
                 marginRight: 10,
@@ -158,6 +170,7 @@ function Dashboard() {
               flexDirection: width < 700 ? "column" : "row",
               alignItems: "flex-start",
               justifyContent: "flex-start",
+
               //  backgroundColor: "red",
             }}
           >
@@ -168,7 +181,9 @@ function Dashboard() {
                 height: width < 700 ? "100%" : "calc(100vh - 300px)",
               }}
             >
-              <h2 style={{ color: "wheat" }}>To do's</h2>
+              <h2 style={{ color: "wheat", textShadow: "4px 4px 5px #0007" }}>
+                To do's
+              </h2>
               <div
                 style={{
                   display: "flex",
@@ -204,7 +219,15 @@ function Dashboard() {
                 marginLeft: width < 700 ? 0 : 20,
               }}
             >
-              <h2 style={{ color: "wheat" }}>Completed</h2>
+              <h2
+                style={{
+                  color: "wheat",
+                  marginLeft: width < 700 ? 0 : 20,
+                  textShadow: "4px 4px 5px #0007",
+                }}
+              >
+                Completed
+              </h2>
               <div
                 style={{
                   display: "flex",
@@ -400,33 +423,35 @@ const TodoItem = ({ item, todoTrigger, setTodoTrigger }) => {
                 marginTop: 10,
               }}
             >
-              <div
-                style={{
-                  cursor: "pointer",
-                  //   backgroundColor: "#f57",
-                  padding: 8,
-                  paddingInline: 15,
-                  borderRadius: 10,
-                  marginLeft: 10,
-                  boxShadow: "5px 5px 10px #0007",
-                  transition: "500ms",
-                  opacity: hover === item?._id ? 1 : 0,
-                  transform: `scale(${hover === item?._id ? 1 : 0})`,
-                }}
-              >
-                <AutoFixHighIcon
-                  style={{ color: "white" }}
-                  onClick={() => {
-                    seteditTodo(item.todo);
-                    setEditTodoModal(true);
+              {!item.completed && (
+                <div
+                  style={{
+                    cursor: "pointer",
+                    backgroundColor: "wheat",
+                    padding: 8,
+                    paddingInline: 15,
+                    borderRadius: 10,
+                    marginLeft: 10,
+                    boxShadow: "5px 5px 10px #0007",
+                    transition: "500ms",
+                    opacity: hover === item?._id ? 1 : 0,
+                    transform: `scale(${hover === item?._id ? 1 : 0})`,
                   }}
-                />
-              </div>
+                >
+                  <AutoFixHighIcon
+                    style={{ color: "white" }}
+                    onClick={() => {
+                      seteditTodo(item.todo);
+                      setEditTodoModal(true);
+                    }}
+                  />
+                </div>
+              )}
               <div
                 style={{
                   cursor: "pointer",
                   // backgroundColor: color,
-                  //  backgroundColor: "#16f",
+                  backgroundColor: "#f57",
                   padding: 8,
                   paddingInline: 15,
                   borderRadius: 10,
@@ -452,15 +477,17 @@ const TodoItem = ({ item, todoTrigger, setTodoTrigger }) => {
           style={{
             display: "flex",
             flexDirection: "column",
-            backgroundColor: "black",
-            backdropFilter: "blur(5px)",
-            width: "50vw",
-            position: "absolute",
-            left: "30%",
+            backgroundColor: "#000e",
+            backdropFilter: "blur(50px)",
+            width: width < 385 ? "75vw" : "50vw",
+            position: "fixed",
+            left: width > 385 ? "30%" : null,
             alignItems: "center",
             padding: 20,
             borderRadius: 14,
             top: "20%",
+            alignSelf: "center",
+            transition: "200ms",
           }}
         >
           <h2 style={{ color: "white" }}>EDIT TODO</h2>
@@ -471,7 +498,7 @@ const TodoItem = ({ item, todoTrigger, setTodoTrigger }) => {
             placeholder="add todo"
             style={{
               height: 20,
-              width: "50%",
+              width: "80%",
               padding: 10,
               borderRadius: 6,
               marginRight: 10,
@@ -526,15 +553,16 @@ const TodoItem = ({ item, todoTrigger, setTodoTrigger }) => {
           style={{
             display: "flex",
             flexDirection: "column",
-            backgroundColor: "black",
-            backdropFilter: "blur(5px)",
-            width: "50vw",
-            position: "absolute",
-            left: "30%",
+            backgroundColor: "#000e",
+            backdropFilter: "blur(50px)",
+            width: width < 385 ? "75vw" : "50vw",
+            position: "fixed",
+            left: width > 385 ? "30%" : null,
             alignItems: "center",
             padding: 20,
             borderRadius: 14,
             top: "20%",
+            alignSelf: "center",
           }}
         >
           <h2 style={{ color: "white" }}>DELETE TODO</h2>
