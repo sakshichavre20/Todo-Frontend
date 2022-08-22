@@ -15,6 +15,7 @@ function AuthWrapper(props) {
         borderRadius: 16,
         padding: 30,
         alignItems: "flex-start",
+        ...props.style,
       }}
     >
       {props.children}

@@ -4,6 +4,10 @@ import { useNavigate } from "react-router";
 import AuthWrapper from "../Components/AuthWrapper";
 import API from "../axios/api";
 import { useWindowDimensions } from "../Constants/Constants";
+//icons
+import VisibilityIcon from "@mui/icons-material/Visibility";
+import VisibilityOffIcon from "@mui/icons-material/VisibilityOff";
+
 function Auth() {
   const { width, height } = useWindowDimensions();
   const navigate = useNavigate();
@@ -14,6 +18,14 @@ function Auth() {
   const [error, setError] = useState("");
   const changeStatus = (status) => {
     setStatus(status);
+  };
+  const [passwordType, setPasswordType] = useState("password");
+  const togglePassword = () => {
+    if (passwordType === "password") {
+      setPasswordType("text");
+      return;
+    }
+    setPasswordType("password");
   };
   const signUp = async () => {
     if (email === "" || password === "") {
@@ -46,6 +58,7 @@ function Auth() {
         .then((res) => {
           localStorage.setItem("token", res?.data?.token);
           localStorage.setItem("user", JSON.stringify(res?.data?.user));
+          window.localStorage.setItem("isLoggedIn", true);
           console.log(res.data);
           navigate("/dashboard");
         })
@@ -84,62 +97,99 @@ function Auth() {
         }}
       />
       {status === "Login" ? (
-        <AuthWrapper>
+        <AuthWrapper
+          style={{
+            //  backgroundColor: "grey",
+            width: width < 385 ? "100vw" : "50vw",
+          }}
+        >
           <h1 style={{ color: "white" }}>Login</h1>
-          <input
-            placeholder="Email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            // style={{
-            //   height: 30,
-            //   width: "90%",
-            //   marginBottom: 10,
-            //   padding: 10,
-            //   fontSize: 16,
-            //   borderRadius: 16,
-            //   borderColor: "transparent",
-            //   outline: "none",
-            // }}
+          <div
             style={{
+              display: "flex",
+              flexDirection: "row",
+              backgroundColor: "white",
               height: 40,
-              width: "90%",
+              width: "100%",
               minWidth: 300,
               marginTop: 8,
               marginBottom: 8,
-              paddingLeft: 10,
+              // paddingLeft: 10,
               fontFamily: "Poppins",
               borderRadius: 10,
               outline: "none",
               border: 0,
+              alignItems: "center",
+              justifyContent: "space-between",
             }}
-          />
-          <input
-            placeholder="Password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            // style={{
-            //   height: 30,
-            //   width: "90%",
-            //   marginBottom: 10,
-            //   padding: 10,
-            //   fontSize: 16,
-            //   borderRadius: 16,
-            //   borderColor: "transparent",
-            //   outline: "none",
-            // }}
+          >
+            <input
+              placeholder="Email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              style={{
+                paddingLeft: 10,
+                fontFamily: "Poppins",
+                borderRadius: 10,
+                outline: "none",
+                border: 0,
+              }}
+            />
+          </div>
+          <div
             style={{
+              display: "flex",
+              flexDirection: "row",
+              backgroundColor: "white",
               height: 40,
-              width: "90%",
+              width: "100%",
               minWidth: 300,
               marginTop: 8,
               marginBottom: 8,
-              paddingLeft: 10,
+              // paddingLeft: 10,
               fontFamily: "Poppins",
               borderRadius: 10,
               outline: "none",
               border: 0,
+              alignItems: "center",
+              justifyContent: "space-between",
             }}
-          />
+          >
+            <input
+              placeholder="Password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              type={passwordType}
+              style={{
+                //  height: 40,
+                //   width: "70%",
+                // minWidth: 300,
+                //  marginTop: 8,
+                // marginBottom: 8,
+                //   backgroundColor: "red",
+                paddingLeft: 10,
+                fontFamily: "Poppins",
+                borderRadius: 10,
+                outline: "none",
+                border: 0,
+              }}
+            />
+            <button
+              className="btn btn-outline-primary"
+              onClick={togglePassword}
+              style={{
+                backgroundColor: "transparent",
+                outline: "none",
+                border: `0px`,
+              }}
+            >
+              {passwordType === "password" ? (
+                <VisibilityIcon style={{ color: "black" }} />
+              ) : (
+                <VisibilityOffIcon style={{ color: "black" }} />
+              )}
+            </button>
+          </div>
           {error.length > 0 && (
             <a
               style={{
@@ -202,59 +252,126 @@ function Auth() {
           </div>
         </AuthWrapper>
       ) : (
-        <AuthWrapper>
+        <AuthWrapper style={{ width: width < 385 ? "100vw" : "50vw" }}>
           <h1 style={{ color: "white" }}>Sign Up</h1>
-          <input
-            placeholder="Username"
-            value={name}
-            onChange={(e) => setName(e.target.value)}
+          <div
             style={{
+              display: "flex",
+              flexDirection: "row",
+              backgroundColor: "white",
               height: 40,
-              width: "90%",
+              width: "100%",
               minWidth: 300,
               marginTop: 8,
               marginBottom: 8,
-              paddingLeft: 10,
+              // paddingLeft: 10,
               fontFamily: "Poppins",
               borderRadius: 10,
               outline: "none",
               border: 0,
+              alignItems: "center",
+              justifyContent: "space-between",
             }}
-          />
-          <input
-            placeholder="Email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
+          >
+            <input
+              placeholder="Username"
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              style={{
+                paddingLeft: 10,
+                fontFamily: "Poppins",
+                borderRadius: 10,
+                outline: "none",
+                border: 0,
+              }}
+            />
+          </div>
+          <div
             style={{
+              display: "flex",
+              flexDirection: "row",
+              backgroundColor: "white",
               height: 40,
-              width: "90%",
+              width: "100%",
               minWidth: 300,
               marginTop: 8,
               marginBottom: 8,
-              paddingLeft: 10,
+              // paddingLeft: 10,
               fontFamily: "Poppins",
               borderRadius: 10,
               outline: "none",
               border: 0,
+              alignItems: "center",
+              justifyContent: "space-between",
             }}
-          />
-          <input
-            placeholder="Password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
+          >
+            <input
+              placeholder="Email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              style={{
+                paddingLeft: 10,
+                fontFamily: "Poppins",
+                borderRadius: 10,
+                outline: "none",
+                border: 0,
+              }}
+            />
+          </div>
+          <div
             style={{
+              display: "flex",
+              flexDirection: "row",
+              backgroundColor: "white",
               height: 40,
-              width: "90%",
+              width: "100%",
               minWidth: 300,
               marginTop: 8,
               marginBottom: 8,
-              paddingLeft: 10,
+              // paddingLeft: 10,
               fontFamily: "Poppins",
               borderRadius: 10,
               outline: "none",
               border: 0,
+              alignItems: "center",
+              justifyContent: "space-between",
             }}
-          />
+          >
+            <input
+              placeholder="Password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              type={passwordType}
+              style={{
+                //  height: 40,
+                //   width: "70%",
+                // minWidth: 300,
+                //  marginTop: 8,
+                // marginBottom: 8,
+                //   backgroundColor: "red",
+                paddingLeft: 10,
+                fontFamily: "Poppins",
+                borderRadius: 10,
+                outline: "none",
+                border: 0,
+              }}
+            />
+            <button
+              className="btn btn-outline-primary"
+              onClick={togglePassword}
+              style={{
+                backgroundColor: "transparent",
+                outline: "none",
+                border: `0px`,
+              }}
+            >
+              {passwordType === "password" ? (
+                <VisibilityIcon style={{ color: "black" }} />
+              ) : (
+                <VisibilityOffIcon style={{ color: "black" }} />
+              )}
+            </button>
+          </div>
           {error.length > 0 && (
             <a
               style={{

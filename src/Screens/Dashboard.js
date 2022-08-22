@@ -1,18 +1,23 @@
 import React, { useState, useEffect, useRef } from "react";
-import DeleteOutlineIcon from "@mui/icons-material/DeleteOutline";
-import AutoFixHighIcon from "@mui/icons-material/AutoFixHigh";
+
 import Moment from "react-moment";
 import { useWindowDimensions } from "../Constants/Constants";
 import "../Styles/Dashboard.css";
 import API from "../axios/api";
 import Loader from "../Components/Loader";
-
+// icons
+import DeleteOutlineIcon from "@mui/icons-material/DeleteOutline";
+import AutoFixHighIcon from "@mui/icons-material/AutoFixHigh";
+import LogoutIcon from "@mui/icons-material/Logout";
+import { useNavigate } from "react-router";
 function Dashboard() {
   const { width, height } = useWindowDimensions();
-
+  const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
 
   const currentUser = localStorage.getItem("user");
+  const isLoggedIn = localStorage.getItem("isLoggedIn");
+  console.log("isLoggedIn Dashboard", isLoggedIn);
   const user = JSON.parse(currentUser);
   // console.log(currentUser);
 
@@ -23,7 +28,13 @@ function Dashboard() {
   const [todoTrigger, setTodoTrigger] = useState(false);
 
   // const [editTodoModal, setEditTodoModal] = useState(false);
-
+  const Logout = () => {
+    localStorage.removeItem("token");
+    localStorage.removeItem("user");
+    localStorage.removeItem("isLoggedIn");
+    navigate("/");
+    window.location.reload();
+  };
   const AddTodo = async () => {
     if (todo === "") {
       console.log("please enter some value");
@@ -106,21 +117,49 @@ function Dashboard() {
             padding: 24,
           }}
         >
-          <h1
+          <div
             style={{
-              color: "wheat",
-              textAlign: "left",
-              textShadow: "4px 4px 5px #0007",
+              //   backgroundColor: "pink",
+              flexDirection: "row",
+              justifyContent: "space-between",
+              display: "flex",
             }}
           >
-            {" "}
-            {user?.name}
-          </h1>
-          <h4 style={{ color: "white", textShadow: "4px 4px 5px #0007" }}>
-            {" "}
-            {user?.email}
-          </h4>
-
+            <div style={{ flexDirection: "column" }}>
+              <h1
+                style={{
+                  color: "wheat",
+                  textAlign: "left",
+                  textShadow: "4px 4px 5px #0007",
+                }}
+              >
+                {" "}
+                {user?.name}
+              </h1>
+              <h4 style={{ color: "white", textShadow: "4px 4px 5px #0007" }}>
+                {" "}
+                {user?.email}
+              </h4>
+            </div>
+            <div
+              onClick={() => Logout()}
+              style={{
+                cursor: "pointer",
+                // backgroundColor: color,
+                backgroundColor: "wheat",
+                padding: 8,
+                paddingInline: 15,
+                borderRadius: 10,
+                marginLeft: 10,
+                height: 25,
+                width: 25,
+                boxShadow: "5px 5px 10px #0007",
+                transition: "500ms",
+              }}
+            >
+              <LogoutIcon style={{ color: "black" }} />
+            </div>
+          </div>
           <div
             style={{
               display: "flex",
