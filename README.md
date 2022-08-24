@@ -1,4 +1,4 @@
-#### TODO APP
+# TODO APP
 This is a small project created with react-js for frontend and node.js and express.js for backend both the front end and backend are hosted using heroku you can find my project at - [Todo-APP](https://sakshi-todo-frontend.herokuapp.com/).
 
 ## Project Functionalities :
