@@ -1,6 +1,6 @@
 # Getting Started with Create React App
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+This is a small project created with react-js for frontend and node.js and express.js for backend both the front end and backend are hosted using heroku you can find my project at - [Todo-APP](https://sakshi-todo-frontend.herokuapp.com/).
 
 ## Available Scripts
 
